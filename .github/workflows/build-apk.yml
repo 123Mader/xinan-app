@@ -6,8 +6,8 @@ on:
     paths: ['android/**', '.github/workflows/build-apk.yml']
   workflow_dispatch:
 
-# 优化: 复用 runner 自带 Android SDK + Gradle 缓存, 构建提速 2-3 倍
-# 旧版手动 wget commandlinetools 已移除 (脆弱且不可缓存)
+# 复用 runner 预装 Android SDK + Gradle 缓存, 提速 2-3 倍
+# 不用第三方 setup-android action (它在 runner cmdline-tools 16.0 上 exit 1), 改纯 sdkmanager
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,12 +25,19 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Android SDK (runner 自带, 仅补 license + 组件)
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platforms;android-35
-            build-tools;35.0.0
+      - name: Setup Android SDK (runner 预装 + 补 license/组件)
+        shell: bash
+        run: |
+          set -e
+          export ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          SDKMGR=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1)
+          if [ -z "$SDKMGR" ]; then echo "未找到 sdkmanager"; ls "$ANDROID_HOME/cmdline-tools"; exit 1; fi
+          echo "sdkmanager: $SDKMGR"
+          (yes || true) | "$SDKMGR" --licenses > /dev/null 2>&1 || true
+          "$SDKMGR" --install "platforms;android-35" "build-tools;35.0.0" 2>&1 | tail -3 || true
+          echo "platforms:"; ls "$ANDROID_HOME/platforms" 2>/dev/null
+          echo "build-tools:"; ls "$ANDROID_HOME/build-tools" 2>/dev/null
 
       - name: Cache Gradle distribution
         uses: actions/cache@v4
@@ -69,16 +76,3 @@ jobs:
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 14
           if-no-files-found: error
-
-      - name: Build Release APK (unsigned)
-        working-directory: android
-        run: gradle assembleRelease --no-daemon || true
-
-      - name: Upload Release APK
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: xinan-release-apk
-          path: android/app/build/outputs/apk/release/*.apk
-          retention-days: 14
-          if-no-files-found: warn
