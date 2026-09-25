@@ -54,13 +54,22 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         llm = LLMInference(requireContext())
-        llm.loadModel("models/qwen3-3b-q4.gguf") { ok ->
-            if (ok) {
-                messages.add(Message("ai", "你好呀，我是心安。今天感觉怎么样？"))
+        // ★ 不自动加载模型: MediaPipe genai native 在模型缺失时 init 可能 SIGSEGV(try/catch 抓不住 → 闪退)
+        // 仅当模型文件存在才加载; 否则给引导, 不触发 native init。视频模式不受影响。
+        val modelsDir = java.io.File(requireContext().getExternalFilesDir(null), "models")
+        val modelFile = java.io.File(modelsDir, "qwen3-3b-q4.gguf")
+        if (modelFile.exists()) {
+            llm.loadModel(modelFile.absolutePath) { ok ->
+                if (ok) {
+                    messages.add(Message("ai", "你好呀，我是心安。今天感觉怎么样？"))
+                } else {
+                    messages.add(Message("ai", "模型加载失败, 请到菜单→🧠模型管理 重新下载"))
+                }
                 adapter.notifyDataSetChanged()
-            } else {
-                Toast.makeText(requireContext(), "模型加载失败, 请检查 models/ 目录", Toast.LENGTH_LONG).show()
             }
+        } else {
+            messages.add(Message("ai", "你好, 我是心安 💙\n\n聊天对话需先装大模型: 右上角菜单 → 🧠模型管理 → 下载一个 3B 模型, 回到聊天即可对话。\n\n📹 视频陪伴模式的微表情/🧠心理预期分析可直接用, 不需要模型。"))
+            adapter.notifyDataSetChanged()
         }
     }
 

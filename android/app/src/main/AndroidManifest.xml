@@ -12,6 +12,7 @@
     <uses-feature android:name="android.hardware.camera.front" android:required="false" />
 
     <application
+        android:name=".XinanApp"
         android:label="心安"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.Xinan"
