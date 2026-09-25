@@ -31,6 +31,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // toolbar 菜单: 成长报告 / 模型管理 入口
+        binding.toolbar.inflateMenu(R.menu.main_menu)
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_report -> { startActivity(Intent(this, com.xinan.app.report.GrowthReportActivity::class.java)); true }
+                R.id.action_models -> { startActivity(Intent(this, com.xinan.app.llm.ModelManageActivity::class.java)); true }
+                else -> false
+            }
+        }
+
         // M3 双模式切换: 单选高亮 + 模式路由
         binding.modeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) {

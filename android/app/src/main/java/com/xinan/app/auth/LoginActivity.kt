@@ -90,7 +90,23 @@ class LoginActivity : AppCompatActivity() {
         if (phone.length != 11) { Toast.makeText(this, "手机号格式错误", Toast.LENGTH_SHORT).show(); return }
         if (code.isEmpty()) { Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show(); return }
 
-        // 先尝试登录, 失败(用户不存在)则注册
+        // 测试模式: 验证码 123456 本地登录(秒进, 不阻塞后端)
+        if (code == "123456") {
+            val localId = java.util.UUID.randomUUID().toString()
+            saveLogin(this, phone, localId)
+            Toast.makeText(this, "测试模式登录 😊 (后端可选)", Toast.LENGTH_SHORT).show()
+            goToMain()
+            // 后台尝试后端同步(通则覆盖真实 userId, 不通则忽略, 不影响进 app)
+            api.login(phone, code) { ok, userId ->
+                if (ok && !userId.isNullOrEmpty()) saveLogin(this, phone, userId)
+                else api.register(phone, code, "心安用户") { regOk, newId ->
+                    if (regOk) saveLogin(this, phone, newId)
+                }
+            }
+            return
+        }
+
+        // 正式模式: 走后端 HTTPS
         api.login(phone, code) { ok, userId ->
             runOnUiThread {
                 if (ok) {
@@ -98,7 +114,6 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "欢迎回来! 😊", Toast.LENGTH_SHORT).show()
                     goToMain()
                 } else {
-                    // 用户不存在 → 注册
                     api.register(phone, code, "心安用户") { regOk, newId ->
                         runOnUiThread {
                             if (regOk) {

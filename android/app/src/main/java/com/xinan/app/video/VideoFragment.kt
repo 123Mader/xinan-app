@@ -147,14 +147,19 @@ class VideoFragment : Fragment() {
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    /** 帧处理: YUV_420_888 → Bitmap → FaceLandmarker (前置镜像) */
+    /** 帧处理: YUV_420_888 → Bitmap → FaceLandmarker (前置镜像). 异常不泄漏 imageProxy */
     private fun processImageProxy(imageProxy: ImageProxy) {
-        imageProxy.image?.let { img ->
-            val bitmap = com.xinan.app.vision.YuvToBitmap.convert(img)
-            val mirrored = com.xinan.app.vision.YuvToBitmap.mirror(bitmap)
-            faceLandmarker.processFrame(mirrored, imageProxy.imageInfo.timestamp)
+        try {
+            imageProxy.image?.let { img ->
+                val bitmap = com.xinan.app.vision.YuvToBitmap.convert(img)
+                val mirrored = com.xinan.app.vision.YuvToBitmap.mirror(bitmap)
+                faceLandmarker.processFrame(mirrored, imageProxy.imageInfo.timestamp)
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("VideoFragment", "帧处理异常: ${e.message}")
+        } finally {
+            imageProxy.close()
         }
-        imageProxy.close()
     }
 
     private fun checkPermissions() {
