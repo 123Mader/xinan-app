@@ -8,6 +8,10 @@ on:
 
 # 复用 runner 预装 Android SDK + Gradle 缓存, 提速 2-3 倍
 # 不用第三方 setup-android action (它在 runner cmdline-tools 16.0 上 exit 1), 改纯 sdkmanager
+# ★ Release 发布 APK: 配合 ghproxy 加速下载到手机
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -76,3 +80,16 @@ jobs:
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 14
           if-no-files-found: error
+
+      - name: Release APK (ghproxy 友好)
+        if: always() && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.3-build${{ github.run_number }}
+          name: 心安 v0.3 build#${{ github.run_number }}
+          body: |
+            微表情心理预期引擎 + Material3 主题
+            构建于 ${{ github.run_id }}
+          files: android/app/build/outputs/apk/debug/*.apk
+          prerelease: true
+          generate_release_notes: false
