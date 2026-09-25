@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 心安: 允许内网/本地后端明文 HTTP (测试期, 后端 server.js 跑在 10.0.0.1 等) -->
+<!-- 心安: HTTPS 自签证书信任 — 信任 system CA + 用户安装的 CA
+     (后端用 gen-cert.sh 自签, 手机装 rootCA.crt 后此处 src="user" 使其被信任) -->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true">
+    <base-config>
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
         </trust-anchors>
     </base-config>
 </network-security-config>

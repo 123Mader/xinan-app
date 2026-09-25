@@ -256,3 +256,26 @@ docs/
 
 ### 验证
 本机无 JDK, APK 由 GitHub Actions 云构建产出。推送后到 Actions 页手动触发或等 push 自动触发, 成功后下载 `xinan-debug-apk`。
+
+---
+
+## 开发进度 v0.4 (后端 HTTPS + SSL 证书)
+
+后端接口从 `http://10.0.0.1:3000` 升级为 `https://10.0.0.1:3443`,配置 SSL 证书。
+内网 IP 无公网 CA 证书 → **自签根 CA + 签发 leaf 证书 + 手机信任 CA** 方案。
+
+### 改动
+- `backend/server.js`: HTTPS 优先(:3443) + HTTP→HTTPS 重定向(:3000),无证书回退 HTTP
+- `backend/gen-cert.sh`: ★ 新增, openssl 生成根 CA + 签 `10.0.0.1` leaf(含 SAN IP), 默认 IP 可传参改
+- `data/ApiClient.kt`: baseUrl → `https://10.0.0.1:3443`
+- `res/xml/network_security_config.xml`: 信任 system + **user CA**(手机装自签 CA 后被信),移除明文
+- `AndroidManifest`: 移除 `usesCleartextTraffic`(纯 HTTPS)
+
+### 部署
+```bash
+# 后端机
+cd backend && bash gen-cert.sh          # 生成 cert/(rootCA.crt + cert.pem + key.pem)
+node server.js                          # 🔒 HTTPS :3443
+# 手机: 装 cert/rootCA.crt 为 CA 证书 (系统凭据→安装证书→CA证书)
+```
+详见 `docs/HTTPS部署.md`。有公网域名可换 Let's Encrypt(手机免装 CA)。

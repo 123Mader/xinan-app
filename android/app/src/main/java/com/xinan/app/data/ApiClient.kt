@@ -7,9 +7,9 @@ import java.net.URL
 
 /**
  * 后端 API 客户端 — 注册/登录/情绪上报
- * 后端: Node.js server.js (http://<服务器IP>:3000)
+ * 后端: Node.js server.js (HTTPS, 自签证书; 手机需先装 rootCA.crt 并被 networkSecurityConfig 信任)
  */
-class ApiClient(private val baseUrl: String = "http://10.0.0.1:3000") {
+class ApiClient(private val baseUrl: String = "https://10.0.0.1:3443") {
 
     companion object {
         // 手机号哈希 (与后端一致: SHA-256 + salt)
