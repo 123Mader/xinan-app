@@ -16,7 +16,9 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.Xinan"
         android:allowBackup="false"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config">
 
         <!-- 主活动: 双模式(聊天/视频) -->
         <!-- 登录入口 (启动器) -->
