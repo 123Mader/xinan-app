@@ -152,13 +152,15 @@ class PsychologicalProjection {
              (1f - blinkAvg) * 0.15f + (1f - leakScore) * 0.2f).coerceIn(0f, 1f)
 
         // 选最高 + 归一化
-        val top = s.maxByOrNull { it.value } ?: Kind.CALM_GROUNDED.name to 0f
+        val topEntry = s.maxByOrNull { it.value }
+        val topKey = topEntry?.key ?: Kind.CALM_GROUNDED.name
+        val topVal = topEntry?.value ?: 0f
         val sum = s.values.sum().coerceAtLeast(1e-6f)
-        val kind = Kind.fromKey(top.first)
-        val norm = (top.second / sum).coerceIn(0f, 1f)
+        val kind = Kind.fromKey(topKey)
+        val norm = (topVal / sum).coerceIn(0f, 1f)
 
         val traj = when {
-            anxDelta > 0.2f -> "焦虑近 ${anxDelta * 100f.toInt()}% 上升中"
+            anxDelta > 0.2f -> "焦虑近 ${(anxDelta * 100f).toInt()}% 上升中"
             anxDelta < -0.2f -> "焦虑近 ${abs(anxDelta * 100f).toInt()}% 缓解中"
             else -> "焦虑趋于平稳"
         }
@@ -166,7 +168,7 @@ class PsychologicalProjection {
         return Projection(
             kind = kind,
             label = kind.label,
-            confidence = top.second,
+            confidence = topVal,
             normalizedConfidence = norm,
             scores = s,
             summary = summaryFor(kind, anxNow, microSurgePerFrame),

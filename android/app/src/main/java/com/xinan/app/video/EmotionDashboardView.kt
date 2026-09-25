@@ -105,12 +105,13 @@ class EmotionDashboardView @JvmOverloads constructor(context: Context, attrs: At
     /** 简单中文换行(按字符宽度估算) */
     private fun drawWrapped(c: Canvas, text: String, x: Float, y: Float, maxW: Float, p: Paint, maxLines: Int): Float {
         var cy = y; var line = StringBuilder()
+        var remain = maxLines
         for (ch in text) {
             line.append(ch)
             if (p.measureText(line.toString()) > maxW) {
                 c.drawText(line.toString(), x, cy, p); cy += p.textSize + 2f
                 line = StringBuilder(ch.toString())
-                if (--maxLines <= 0) return cy
+                if (--remain <= 0) return cy
             }
         }
         if (line.isNotEmpty()) { c.drawText(line.toString(), x, cy, p); cy += p.textSize + 2f }
