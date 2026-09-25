@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 权限: 摄像头(视频微表情) / 网络(注册登录) / 存储(模型) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- 摄像头特性 -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+
+    <application
+        android:label="心安"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/Theme.Xinan"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+
+        <!-- 主活动: 双模式(聊天/视频) -->
+        <!-- 登录入口 (启动器) -->
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 模型管理 -->
+        <activity
+            android:name=".llm.ModelManageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 成长报告 -->
+        <activity
+            android:name=".report.GrowthReportActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 正念呼吸引导 -->
+        <activity
+            android:name=".relax.BreathingGuideActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 主界面 (由登录后进入) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 隐私声明: 非医疗设备, 严重情况引导就医 -->
+
+    </application>
+</manifest>

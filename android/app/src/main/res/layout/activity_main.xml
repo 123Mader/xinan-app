@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  「心安」主界面 — Material 3
+  垂直结构: MaterialToolbar + Fragment容器(weight) + M3 双模式切换。
+  保留旧 view-binding ID (fragmentContainer / btnChatMode / btnVideoMode) 兼容 MainActivity,
+  新增 modeToggleGroup 用于 M3 单选高亮。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@android:color/transparent"
+        app:title="心安"
+        app:titleCentered="true"
+        app:titleTextColor="?attr/colorOnSurface"
+        app:logo="@drawable/ic_xinan_logo"
+        app:logoDescription="心安" />
+
+    <!-- 内容区 (聊天/视频 Fragment) -->
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- 底部模式切换: M3 SegmentedButton -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/modeToggleGroup"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mode_bar_height"
+        android:gravity="center"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingVertical="10dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChatMode"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="聊天"
+            app:icon="@drawable/ic_mode_chat"
+            app:iconGravity="top"
+            app:iconSize="22dp"
+            app:cornerRadius="18dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVideoMode"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="视频陪伴"
+            app:icon="@drawable/ic_mode_video"
+            app:iconGravity="top"
+            app:iconSize="22dp"
+            app:cornerRadius="18dp" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+</LinearLayout>

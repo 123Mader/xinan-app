@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 心安品牌小标: 心形 + 心电波 (工具栏 nav icon) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorPrimary">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,21l-1.45,-1.32C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3 19.58,3 22,5.42 22,8.5c0,1.61 -0.66,3.13 -1.9,4.55 -0.27,-0.34 -0.62,-0.62 -1.02,-0.81C20.36,11.39 20,9.97 20,8.5 20,6.6 18.4,5 16.5,5c-1.2,0 -2.3,0.64 -2.9,1.66l-0.6,0.99 -0.6,-0.99C11.8,5.64 10.7,5 9.5,5 7.6,5 6,6.6 6,8.5c0,2.6 2.2,5.06 6,8.5 0.6,-0.55 1.17,-1.07 1.7,-1.57l0.01,2.94C13.45,18.81 12.74,19.39 12,20z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,13h3l1.5,-3 2,6 2,-4 1,1h3v2h-2l-2,-2 -2.5,5 -2,-6 -0.5,1L2,15v-2z" />
+</vector>
