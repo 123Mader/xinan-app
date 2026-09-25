@@ -1,6 +1,5 @@
 // ============================================================
-// 「心安」Android 主界面 — 双模式入口 (聊天 + 视频陪伴) · 最稳版
-// 去掉 toolbar menu / toggle group, 用纯 Button click, 确保 inflate 不崩
+// 「心安」Android 主界面 — 双模式入口 · 最稳版 + 诊断打点
 // ============================================================
 package com.xinan.app
 
@@ -19,23 +18,33 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 未登录跳转登录页
+        Trace.log("2_main_onCreate_start")
         if (!com.xinan.app.auth.LoginActivity.isLoggedIn(this)) {
             startActivity(Intent(this, com.xinan.app.auth.LoginActivity::class.java))
             finish()
             return
         }
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        Trace.log("3_main_logged_in")
+        try {
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            Trace.log("4_main_inflated")
+            setContentView(binding.root)
+            Trace.log("5_main_setcontent")
+        } catch (e: Exception) {
+            Trace.log("5_main_inflate_fail", e.message ?: "")
+            throw e
+        }
 
         binding.btnChatMode.setOnClickListener { switchMode("chat") }
         binding.btnVideoMode.setOnClickListener { switchMode("video") }
 
-        // 默认进入聊天
+        Trace.log("6_main_before_switch")
         switchMode("chat")
+        Trace.log("9_main_after_switch")
     }
 
     private fun switchMode(mode: String) {
+        Trace.log("7_switch_mode", mode)
         val fragment: Fragment = when (mode) {
             "video" -> VideoFragment().also { videoFragment = it }
             else -> ChatFragment().also { videoFragment = null }
@@ -45,12 +54,11 @@ class MainActivity : AppCompatActivity() {
                 .replace(binding.fragmentContainer.id, fragment)
                 .commitAllowingStateLoss()
         } catch (e: Exception) {
-            android.util.Log.e("MainActivity", "Fragment 切换失败: ${e.message}")
+            Trace.log("7_switch_fail", e.message ?: "")
         }
         binding.btnChatMode.isSelected = mode == "chat"
         binding.btnVideoMode.isSelected = mode == "video"
     }
 
-    /** 供子 Fragment 拿到当前视频实例 (跨模块联动) */
     fun currentVideoFragment(): VideoFragment? = videoFragment
 }
